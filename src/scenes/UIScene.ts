@@ -27,6 +27,7 @@ export class UIScene extends Phaser.Scene {
   private missionBox!: Phaser.GameObjects.Graphics;
   private chips!: Phaser.GameObjects.Text;
   private extraChip!: Phaser.GameObjects.Text;
+  private keyHint!: Phaser.GameObjects.Text;
   private minimapDots!: Phaser.GameObjects.Graphics;
   private toastText!: Phaser.GameObjects.Text;
   private toastTimer?: Phaser.Time.TimerEvent;
@@ -91,7 +92,7 @@ export class UIScene extends Phaser.Scene {
 
     // Status chips (bottom-centre).
     this.chips = this.add
-      .text(GAME_W / 2 + 60, GAME_H - 30, '', {
+      .text(GAME_W / 2 + 60, GAME_H - 44, '', {
         fontFamily: FONT_BOLD,
         fontSize: '14px',
         color: '#ffffff',
@@ -99,11 +100,21 @@ export class UIScene extends Phaser.Scene {
         padding: { x: 10, y: 5 },
       })
       .setOrigin(0.5);
+    // Key legend under the chips, so the controls are learnable in play.
+    this.keyHint = this.add
+      .text(GAME_W / 2 + 60, GAME_H - 15, '', {
+        fontFamily: FONT,
+        fontSize: '12px',
+        color: '#dddddd',
+        backgroundColor: '#00000088',
+        padding: { x: 8, y: 3 },
+      })
+      .setOrigin(0.5);
     this.extraChip = this.add
-      .text(GAME_W / 2 + 60, GAME_H - 64, '', { fontFamily: FONT_BOLD, fontSize: '14px', color: '#ffffff', padding: { x: 10, y: 4 } })
+      .text(GAME_W / 2 + 60, GAME_H - 78, '', { fontFamily: FONT_BOLD, fontSize: '14px', color: '#ffffff', padding: { x: 10, y: 4 } })
       .setOrigin(0.5);
     this.toastText = this.add
-      .text(GAME_W / 2 + 60, GAME_H - 104, '', {
+      .text(GAME_W / 2 + 60, GAME_H - 118, '', {
         fontFamily: FONT,
         fontSize: '15px',
         color: '#ffffff',
@@ -182,10 +193,14 @@ export class UIScene extends Phaser.Scene {
       const L = h.blinker < 0 ? (h.blinkOn ? '◀◀' : '◁◁') : '◁';
       const R = h.blinker > 0 ? (h.blinkOn ? '▶▶' : '▷▷') : '▷';
       this.chips.setText(
-        `${L}   GURT ${h.belt ? '✔' : '✘'}   LICHT ${h.lights ? '✔' : '–'}   PARKSCHEIBE ${h.disc ? '✔' : '–'}   ${R}`,
+        `[Q] ${L}   [B] GURT ${h.belt ? '✔' : '✘'}   [L] LICHT ${h.lights ? '✔' : '–'}   [P] PARKSCHEIBE ${h.disc ? '✔' : '–'}   ${R} [E]`,
       );
       this.chips.setColor(h.belt ? '#ffffff' : '#ffb3b3');
-    } else this.chips.setText(`ZU FUSS · F = einsteigen · SPACE = benutzen · SHIFT = laufen · Z = warten`).setColor('#ffffff');
+      this.keyHint.setText('WASD/↑↓←→ fahren · SPACE Handbremse · H Hupe (€0,50) · F aussteigen · Z warten · M Ton · ESC Pause');
+    } else {
+      this.chips.setText('ZU FUSS').setColor('#ffffff');
+      this.keyHint.setText('WASD/↑↓←→ gehen · SHIFT laufen · SPACE benutzen · F einsteigen · Z warten · M Ton · ESC Pause');
+    }
     let extra = '';
     let bg = '#00000000';
     if (h.rescueLane !== null) {
